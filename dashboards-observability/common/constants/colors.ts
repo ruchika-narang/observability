@@ -100,7 +100,7 @@ export const YlGnBu_PALETTE = {
 export const DEFAULT_PALETTE = 'default';
 export const SINGLE_COLOR_PALETTE = 'singleColor';
 
-export const TREEMAP_PALETTES = [
+export const COLOR_PALETTES = [
   {
     value: DEFAULT_PALETTE,
     title: 'Default',
@@ -160,3 +160,8 @@ export const TREEMAP_PALETTES = [
     type: 'gradient',
   },
 ];
+
+export const HEATMAP_PALETTE_COLOR = { name: REDS_PALETTE.label, color: REDS_PALETTE.label };
+export const HEATMAP_SINGLE_COLOR = { name: 'singleColor', color: '#000000' };
+export const OPACITY = 'opacity';
+export const SPECTRUM = 'spectrum';

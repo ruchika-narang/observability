@@ -46,13 +46,13 @@ export const GREYS_PALETTE = {
   colors: ['rgb(0,0,0)', 'rgb(255,255,255)'],
 };
 
-export const BLUERED_PALETTE = {
+export const BLUE_RED_PALETTE = {
   name: 'Bluered',
   label: 'Blue-Red',
   colors: ['rgb(0,0,255)', 'rgb(255,0,0)'],
 };
 
-export const RdBu_PALETTE = {
+export const RED_BLUE_PALETTE = {
   name: 'RdBu',
   label: 'Red-Blue',
   colors: [
@@ -65,7 +65,7 @@ export const RdBu_PALETTE = {
   ],
 };
 
-export const YlOrRd_PALETTE = {
+export const YELLOW_ORANGE_RED_PALETTE = {
   name: 'YlOrRd',
   label: 'Yellow-Orange-Red',
   colors: [
@@ -81,7 +81,7 @@ export const YlOrRd_PALETTE = {
   ],
 };
 
-export const YlGnBu_PALETTE = {
+export const YELLOW_GREEN_BLUE_PALETTE = {
   name: 'YlGnBu',
   label: 'Yellow-Green-Blue',
   colors: [
@@ -136,27 +136,27 @@ export const COLOR_PALETTES = [
     type: 'gradient',
   },
   {
-    value: BLUERED_PALETTE.name,
-    title: BLUERED_PALETTE.label,
-    palette: colorPalette(BLUERED_PALETTE.colors, 20),
+    value: BLUE_RED_PALETTE.name,
+    title: BLUE_RED_PALETTE.label,
+    palette: colorPalette(BLUE_RED_PALETTE.colors, 20),
     type: 'gradient',
   },
   {
-    value: RdBu_PALETTE.name,
-    title: RdBu_PALETTE.label,
-    palette: colorPalette(RdBu_PALETTE.colors, 20, true),
+    value: RED_BLUE_PALETTE.name,
+    title: RED_BLUE_PALETTE.label,
+    palette: colorPalette(RED_BLUE_PALETTE.colors, 20, true),
     type: 'gradient',
   },
   {
-    value: YlOrRd_PALETTE.name,
-    title: YlOrRd_PALETTE.label,
-    palette: colorPalette(YlOrRd_PALETTE.colors, 20),
+    value: YELLOW_ORANGE_RED_PALETTE.name,
+    title: YELLOW_ORANGE_RED_PALETTE.label,
+    palette: colorPalette(YELLOW_ORANGE_RED_PALETTE.colors, 20),
     type: 'gradient',
   },
   {
-    value: YlGnBu_PALETTE.name,
-    title: YlGnBu_PALETTE.label,
-    palette: colorPalette(YlGnBu_PALETTE.colors, 20),
+    value: YELLOW_GREEN_BLUE_PALETTE.name,
+    title: YELLOW_GREEN_BLUE_PALETTE.label,
+    palette: colorPalette(YELLOW_GREEN_BLUE_PALETTE.colors, 20),
     type: 'gradient',
   },
 ];

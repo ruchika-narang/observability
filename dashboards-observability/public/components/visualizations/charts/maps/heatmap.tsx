@@ -25,22 +25,12 @@ export const HeatMap = ({ visualizations, layout, config }: any) => {
   } = visualizations.data.rawVizData;
   const { defaultAxes } = visualizations.data;
   const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
-  const yaxis = defaultAxes.yaxis ?? [];
 
   if (fields.length < 3) return <EmptyPlaceholder icon={visualizations?.vis?.iconType} />;
 
-  const xaxisField = fields[fields.length - 2];
-  const yaxisField = fields[fields.length - 1];
-  const zMetrics =
-    dataConfig?.valueOptions && dataConfig?.valueOptions.zaxis
-      ? dataConfig?.valueOptions.zaxis[0]
-      : yaxis.length > 0
-      ? yaxis[0]
-      : fields[fields.length - 3];
-  const uniqueYaxis = uniq(data[yaxisField.name]);
-  const uniqueXaxis = uniq(data[xaxisField.name]);
-  const uniqueYaxisLength = uniqueYaxis.length;
-  const uniqueXaxisLength = uniqueXaxis.length;
+  const xaxisField = visualizations.data?.rawVizData?.dataConfig?.dimensions[0];
+  const yaxisField = visualizations.data?.rawVizData?.dataConfig?.dimensions[1];
+  const zMetrics = visualizations.data?.rawVizData?.dataConfig?.metrics[0];
 
   if (
     isEmpty(xaxisField) ||
@@ -52,6 +42,11 @@ export const HeatMap = ({ visualizations, layout, config }: any) => {
     indexOf(NUMERICAL_FIELDS, zMetrics.type) < 0
   )
     return <EmptyPlaceholder icon={visualizations?.vis?.iconType} />;
+
+  const uniqueYaxis = uniq(data[yaxisField.name]);
+  const uniqueXaxis = uniq(data[xaxisField.name]);
+  const uniqueYaxisLength = uniqueYaxis.length;
+  const uniqueXaxisLength = uniqueXaxis.length;
 
   const colorField = dataConfig?.chartStyles
     ? dataConfig?.chartStyles.colorMode && dataConfig?.chartStyles.colorMode[0].name === OPACITY

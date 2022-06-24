@@ -35,7 +35,14 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
   const { data } = visualizations;
   const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
 
-  const newEntry = { label: '', aggregation: '', custom_label: '', name: '', side: 'right' };
+  const initialConfigEntry = {
+    label: '',
+    aggregation: '',
+    custom_label: '',
+    name: '',
+    side: 'right',
+    type: '',
+  };
 
   const [configList, setConfigList] = useState<ConfigList>({});
 
@@ -55,8 +62,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       });
     } else {
       setConfigList({
-        dimensions: [newEntry, newEntry],
-        metrics: [newEntry],
+        dimensions: [initialConfigEntry, initialConfigEntry],
+        metrics: [initialConfigEntry],
       });
     }
   }, [data.defaultAxes, data.rawVizData?.dataConfig, visualizations.vis.name]);
@@ -78,10 +85,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       ],
     };
     setConfigList(newList);
-  };
-
-  const handleSideChange = (id, value, index: number, name: string) => {
-    updateList(id, index, name, 'side');
   };
 
   const handleServiceRemove = (index: number, name: string) => {
@@ -112,7 +115,7 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     );
   };
 
-  const isPositionButtonAllow = (sectionName: string) =>
+  const isPositionButtonVisible = (sectionName: string) =>
     sectionName === 'metrics' &&
     (visualizations.vis.name === visChartTypes.Line ||
       visualizations.vis.name === visChartTypes.Bar);
@@ -179,7 +182,7 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
                 />
               </EuiFormRow>
 
-              {isPositionButtonAllow(sectionName) && (
+              {isPositionButtonVisible(sectionName) && (
                 <EuiFormRow label="Side">
                   <ButtonGroupItem
                     legend="Side"

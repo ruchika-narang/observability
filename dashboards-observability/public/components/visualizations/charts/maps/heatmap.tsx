@@ -36,15 +36,15 @@ export const HeatMap = ({ visualizations, layout, config }: any) => {
     isEmpty(xaxisField) ||
     isEmpty(yaxisField) ||
     isEmpty(zMetrics) ||
-    isEmpty(data[xaxisField.name]) ||
-    isEmpty(data[yaxisField.name]) ||
-    isEmpty(data[zMetrics.name]) ||
+    isEmpty(data[xaxisField.label]) ||
+    isEmpty(data[yaxisField.label]) ||
+    isEmpty(data[zMetrics.label]) ||
     indexOf(NUMERICAL_FIELDS, zMetrics.type) < 0
   )
     return <EmptyPlaceholder icon={visualizations?.vis?.iconType} />;
 
-  const uniqueYaxis = uniq(data[yaxisField.name]);
-  const uniqueXaxis = uniq(data[xaxisField.name]);
+  const uniqueYaxis = uniq(data[yaxisField.label]);
+  const uniqueXaxis = uniq(data[xaxisField.label]);
   const uniqueYaxisLength = uniqueYaxis.length;
   const uniqueXaxisLength = uniqueXaxis.length;
 
@@ -70,8 +70,8 @@ export const HeatMap = ({ visualizations, layout, config }: any) => {
     const buckets = {};
 
     // maps bukcets to metrics
-    for (let i = 0; i < data[xaxisField.name].length; i++) {
-      buckets[`${data[xaxisField.name][i]},${data[yaxisField.name][i]}`] = data[zMetrics.name][i];
+    for (let i = 0; i < data[xaxisField.label].length; i++) {
+      buckets[`${data[xaxisField.label][i]},${data[yaxisField.label][i]}`] = data[zMetrics.label][i];
     }
 
     // initialize empty 2 dimensional array, inner loop for each xaxis field, outer loop for yaxis

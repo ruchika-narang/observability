@@ -85,12 +85,15 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     } else if (
       visualizations.vis.name !== visChartTypes.HeatMap &&
       visualizations.vis.name !== visChartTypes.Histogram &&
+      visualizations.vis.name !== visChartTypes.Metrics &&
       (data.defaultAxes.xaxis || data.defaultAxes.yaxis)
     ) {
       const { xaxis, yaxis } = data.defaultAxes;
       setConfigList({
         dimensions: [...(xaxis && xaxis)],
-        metrics: [...(yaxis && yaxis.map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' })))],
+        metrics: [
+          ...(yaxis && yaxis.map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' }))),
+        ],
       });
     } else if (visualizations.vis.name === visChartTypes.HeatMap) {
       setConfigList({
@@ -100,6 +103,10 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     } else if (visualizations.vis.name === visChartTypes.Histogram) {
       setConfigList({
         dimensions: [{ bucketSize: '', bucketOffset: '' }],
+      });
+    } else if (visualizations.vis.name === visChartTypes.Metrics) {
+      setConfigList({
+        metrics: [initialConfigEntry],
       });
     }
   }, [
@@ -185,8 +192,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     return sectionName === 'metrics'
       ? unselectedFields
       : visualizations.vis.name === visChartTypes.Line
-        ? unselectedFields.filter((i) => i.type === 'timestamp')
-        : unselectedFields;
+      ? unselectedFields.filter((i) => i.type === 'timestamp')
+      : unselectedFields;
   };
 
   const getCommonUI = (lists, sectionName: string) =>
@@ -273,7 +280,9 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
                     iconType="plusInCircleFilled"
                     color="primary"
                     onClick={() => handleServiceAdd(sectionName)}
-                    disabled={sectionName === "dimensions" && visualizations.vis.name === visChartTypes.Line}
+                    disabled={
+                      sectionName === 'dimensions' && visualizations.vis.name === visChartTypes.Line
+                    }
                   >
                     Add
                   </EuiButton>
@@ -294,8 +303,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
         placeholder="auto"
         value={
           configList?.dimensions &&
-            configList?.dimensions.length > 0 &&
-            configList.dimensions[0][type]
+          configList?.dimensions.length > 0 &&
+          configList.dimensions[0][type]
             ? configList.dimensions[0][type]
             : ''
         }
@@ -315,10 +324,14 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       <EuiSpacer size="s" />
       {visualizations.vis.name !== visChartTypes.Histogram ? (
         <>
-          <EuiTitle size="xxs">
-            <h3>Dimensions</h3>
-          </EuiTitle>
-          {getCommonUI(configList.dimensions, 'dimensions')}
+          {visualizations.vis.name !== visChartTypes.Metrics && (
+            <>
+              <EuiTitle size="xxs">
+                <h3>Dimensions</h3>
+              </EuiTitle>
+              {getCommonUI(configList.dimensions, 'dimensions')}
+            </>
+          )}
 
           <EuiSpacer size="s" />
           <EuiTitle size="xxs">

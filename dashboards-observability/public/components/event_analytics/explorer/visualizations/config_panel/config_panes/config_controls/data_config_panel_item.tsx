@@ -135,7 +135,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       ],
     };
     setConfigList(updatedList);
-    updateChart(updatedList);
   };
 
   const updateHistogramConfig = (configName: string, fieldName: string, value: string) => {
@@ -155,7 +154,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     arr.splice(index, 1);
     const updatedList = { ...list, [name]: arr };
     setConfigList(updatedList);
-    updateChart(updatedList);
   };
 
   const handleServiceAdd = (name: string) => {
@@ -163,7 +161,7 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     setConfigList(updatedList);
   };
 
-  const updateChart = (updatedConfigList = configList) => {
+  const updateChart = () => {
     dispatch(
       renderExplorerVis({
         tabId,
@@ -171,8 +169,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
           ...explorerVisualizations,
           [visualizations.vis.name]: {
             dataConfig: {
-              metrics: updatedConfigList.metrics,
-              dimensions: updatedConfigList.dimensions,
+              metrics: configList.metrics,
+              dimensions: configList.dimensions,
             },
           },
         },
@@ -181,7 +179,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
   };
 
   const isPositionButtonVisible = (sectionName: string) =>
-    sectionName === 'metrics' && visualizations.vis.name === visChartTypes.Line;
+    sectionName === 'metrics' &&
+    (visualizations.vis.name === visChartTypes.Line || visualizations.vis.name === visChartTypes.Scatter);
 
   const getOptionsAvailable = (sectionName: string) => {
     let selectedFields = {};
@@ -309,7 +308,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
             : ''
         }
         onChange={(e) => updateHistogramConfig('dimensions', type, e.target.value)}
-        onBlur={() => updateChart()}
         data-test-subj="valueFieldNumber"
       />
       <EuiSpacer size="s" />
@@ -357,9 +355,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
         <EuiButton
           data-test-subj="visualizeEditorRenderButton"
           iconType="play"
-          onClick={() => updateChart()}
+          onClick={updateChart}
           size="s"
-          disabled
         >
           Update chart
         </EuiButton>

@@ -151,3 +151,22 @@ export const DefaultGaugeChartParameters: DefaultGaugeChartParametersProps = {
   LegendPlacement: 'center',
   ThresholdsMaxLimit: 1
 }
+
+// default ppl aggregation method options
+export const METRICS_AGGREGATION_OPTIONS = [
+  {
+    label: 'COUNT',
+  },
+  {
+    label: 'SUM',
+  },
+  {
+    label: 'AVERAGE',
+  },
+  {
+    label: 'MAX',
+  },
+  {
+    label: 'MIN',
+  },
+];

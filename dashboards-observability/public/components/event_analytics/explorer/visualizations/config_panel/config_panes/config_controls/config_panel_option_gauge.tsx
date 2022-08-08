@@ -15,10 +15,10 @@ export const ConfigPanelOptionGauge = ({
   panelOptionsValues,
   handleConfigChange,
 }: any) => {
-  const { Gauge = {} } = visualizations?.data?.rawVizData;
-  const isReadOnly = !(
-    Gauge?.dataConfig?.dimensions?.length && Gauge?.dataConfig?.dimensions[0]?.name != ''
-  );
+  const { dataConfig = {}, layoutConfig = {} } = visualizations?.data?.userConfigs;
+  const dimensions = dataConfig?.valueOptions?.dimensions
+    ? dataConfig.valueOptions.dimensions.filter((i) => i.name !== '')
+    : [];
   const [numberOfGauges, setNumberOfGauges] = useState<number>(
     DefaultGaugeChartParameters.DisplayDefaultGauges
   );

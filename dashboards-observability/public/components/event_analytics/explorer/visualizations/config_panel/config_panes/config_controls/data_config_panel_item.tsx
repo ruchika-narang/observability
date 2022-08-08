@@ -18,11 +18,7 @@ import {
   EuiFieldNumber,
   htmlIdGenerator,
 } from '@elastic/eui';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  render as renderExplorerVis,
-  selectExplorerVisualization,
-} from '../../../../../../event_analytics/redux/slices/visualization_slice';
+import { useDispatch } from 'react-redux';
 import {
   AGGREGATION_OPTIONS,
   numericalTypes,
@@ -34,9 +30,9 @@ import { TabContext } from '../../../../../hooks';
 
 export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) => {
   const dispatch = useDispatch();
-  const { tabId } = useContext<any>(TabContext);
-  const explorerVisualizations = useSelector(selectExplorerVisualization)[tabId];
+  const { tabId, curVisId, changeVisualizationConfig } = useContext<any>(TabContext);
   const { data } = visualizations;
+  const { userConfigs } = data;
 
   const { data: vizData = {}, metadata: { fields = [] } = {} } = data?.rawVizData;
 
@@ -52,20 +48,18 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
   const [configList, setConfigList] = useState<ConfigList>({});
 
   useEffect(() => {
-    if (
-      configList.dimensions &&
-      configList.metrics &&
-      visualizations.data?.rawVizData?.[visualizations.vis.name] === undefined
-    ) {
+    if (configList.dimensions && configList.metrics && !userConfigs.dataConfig) {
       dispatch(
-        renderExplorerVis({
+        changeVisualizationConfig({
           tabId,
+          vizId: curVisId,
           data: {
-            ...explorerVisualizations,
-            [visualizations.vis.name]: {
-              dataConfig: {
-                metrics: configList.metrics,
+            ...userConfigs,
+            dataConfig: {
+              ...userConfigs.dataConfig,
+              valueOptions: {
                 dimensions: configList.dimensions,
+                metrics: configList.metrics,
               },
             },
           },
@@ -75,12 +69,9 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
   }, [configList]);
 
   useEffect(() => {
-    if (
-      data.rawVizData?.[visualizations.vis.name] &&
-      data.rawVizData?.[visualizations.vis.name].dataConfig
-    ) {
+    if (userConfigs && userConfigs.dataConfig && userConfigs.dataConfig.valueOptions) {
       setConfigList({
-        ...data.rawVizData[visualizations.vis.name].dataConfig,
+        ...userConfigs.dataConfig.valueOptions,
       });
     } else if (
       visualizations.vis.name !== visChartTypes.HeatMap &&
@@ -90,7 +81,9 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       const { xaxis, yaxis } = data.defaultAxes;
       setConfigList({
         dimensions: [...(xaxis && xaxis)],
-        metrics: [...(yaxis && yaxis.map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' })))],
+        metrics: [
+          ...(yaxis && yaxis.map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' }))),
+        ],
       });
     } else if (visualizations.vis.name === visChartTypes.HeatMap) {
       setConfigList({
@@ -128,7 +121,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
       ],
     };
     setConfigList(updatedList);
-    updateChart(updatedList);
   };
 
   const updateHistogramConfig = (configName: string, fieldName: string, value: string) => {
@@ -148,7 +140,6 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     arr.splice(index, 1);
     const updatedList = { ...list, [name]: arr };
     setConfigList(updatedList);
-    updateChart(updatedList);
   };
 
   const handleServiceAdd = (name: string) => {
@@ -156,16 +147,18 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     setConfigList(updatedList);
   };
 
-  const updateChart = (updatedConfigList = configList) => {
+  const updateChart = () => {
     dispatch(
-      renderExplorerVis({
+      changeVisualizationConfig({
         tabId,
+        vizId: curVisId,
         data: {
-          ...explorerVisualizations,
-          [visualizations.vis.name]: {
-            dataConfig: {
-              metrics: updatedConfigList.metrics,
-              dimensions: updatedConfigList.dimensions,
+          ...userConfigs,
+          dataConfig: {
+            ...userConfigs.dataConfig,
+            valueOptions: {
+              dimensions: configList.dimensions,
+              metrics: configList.metrics,
             },
           },
         },
@@ -174,7 +167,9 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
   };
 
   const isPositionButtonVisible = (sectionName: string) =>
-    sectionName === 'metrics' && visualizations.vis.name === visChartTypes.Line;
+    sectionName === 'metrics' &&
+    (visualizations.vis.name === visChartTypes.Line ||
+      visualizations.vis.name === visChartTypes.Scatter);
 
   const getOptionsAvailable = (sectionName: string) => {
     let selectedFields = {};
@@ -185,8 +180,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
     return sectionName === 'metrics'
       ? unselectedFields
       : visualizations.vis.name === visChartTypes.Line
-        ? unselectedFields.filter((i) => i.type === 'timestamp')
-        : unselectedFields;
+      ? unselectedFields.filter((i) => i.type === 'timestamp')
+      : unselectedFields;
   };
 
   const getCommonUI = (lists, sectionName: string) =>
@@ -273,7 +268,9 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
                     iconType="plusInCircleFilled"
                     color="primary"
                     onClick={() => handleServiceAdd(sectionName)}
-                    disabled={sectionName === "dimensions" && visualizations.vis.name === visChartTypes.Line}
+                    disabled={
+                      sectionName === 'dimensions' && visualizations.vis.name === visChartTypes.Line
+                    }
                   >
                     Add
                   </EuiButton>
@@ -294,13 +291,12 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
         placeholder="auto"
         value={
           configList?.dimensions &&
-            configList?.dimensions.length > 0 &&
-            configList.dimensions[0][type]
+          configList?.dimensions.length > 0 &&
+          configList.dimensions[0][type]
             ? configList.dimensions[0][type]
             : ''
         }
         onChange={(e) => updateHistogramConfig('dimensions', type, e.target.value)}
-        onBlur={() => updateChart()}
         data-test-subj="valueFieldNumber"
       />
       <EuiSpacer size="s" />
@@ -344,9 +340,8 @@ export const DataConfigPanelItem = ({ fieldOptionList, visualizations }: any) =>
         <EuiButton
           data-test-subj="visualizeEditorRenderButton"
           iconType="play"
-          onClick={() => updateChart()}
+          onClick={updateChart}
           size="s"
-          disabled
         >
           Update chart
         </EuiButton>

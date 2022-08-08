@@ -38,11 +38,12 @@ export const Line = ({ visualizations, layout, config }: any) => {
     availabilityConfig = {},
   } = visualizations?.data?.userConfigs;
 
-  const dataConfigTab =
-    visualizations.data?.rawVizData?.line?.dataConfig &&
-    visualizations.data.rawVizData.line.dataConfig;
-  const xaxis = dataConfigTab?.dimensions ? dataConfigTab?.dimensions.filter((item) => item.label) : [];
-  const yaxis = dataConfigTab?.metrics ? dataConfigTab?.metrics.filter((item) => item.label) : [];
+  const xaxis = dataConfig?.valueOptions?.dimensions
+    ? dataConfig.valueOptions.dimensions.filter((item) => item.label)
+    : [];
+  const yaxis = dataConfig?.valueOptions?.metrics
+    ? dataConfig.valueOptions.metrics.filter((item) => item.label)
+    : [];
 
   const lastIndex = fields.length - 1;
 
@@ -75,8 +76,9 @@ export const Line = ({ visualizations, layout, config }: any) => {
   if (!isEmpty(xaxis) && !isEmpty(yaxis)) {
     valueSeries = [...yaxis];
   } else {
-    valueSeries = (defaultAxes.yaxis || take(fields, lastIndex > 0 ? lastIndex : 1))
-      .map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' }));
+    valueSeries = (
+      defaultAxes.yaxis || take(fields, lastIndex > 0 ? lastIndex : 1)
+    ).map((item, i) => ({ ...item, side: i === 0 ? 'left' : 'right' }));
   }
 
   const isDimensionTimestamp = isEmpty(xaxis)
